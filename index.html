@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="/js/face-api.js"></script>
+    <script src="./js/face-api.js"></script>
   </head>
   <body>
     <!-- ファイルインプット -->
@@ -27,7 +27,7 @@
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
 
         // 顔認識
-        await faceapi.nets.ssdMobilenetv1.load("/weights/");
+        await faceapi.nets.ssdMobilenetv1.load("./weights/");
         const options = new faceapi.SsdMobilenetv1Options({
           minConfidence: 0.3,
         });
@@ -52,7 +52,7 @@
             img.src = src;
           });
         };
-        const image = await loadImage("/images/test_img.png");
+        const image = await loadImage("./images/test_img.png");
 
         // はめ込み画像を認識した顔の位置に設定
         resizedResults.forEach((result) => {
