@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="face-api.js"></script>
+  </head>
+  <body>
+    <!-- ファイルインプット -->
+    <input id="uploadInput" type="file" onchange="faceDetection()" />
+    <!-- キャンバス -->
+    <div style="position: relative">
+      <img id="inputImg" src="" style="max-width: 1200px" />
+      <canvas id="overlay" style="position: absolute; top: 0; left: 0"></canvas>
+    </div>
+    <script>
+      faceDetection = async () => {
+        // input画像取得
+        const imgFile = document.getElementById("uploadInput").files[0];
+        const img = await faceapi.bufferToImage(imgFile);
+
+        // input画像を設定
+        const inputImgEl = document.getElementById("inputImg");
+        inputImgEl.src = img.src;
+
+        // canvasを読込
+        const canvas = document.getElementById("overlay");
+        // リセット
+        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+
+        // 顔認識
+        await faceapi.nets.ssdMobilenetv1.load("/");
+        const options = new faceapi.SsdMobilenetv1Options({
+          minConfidence: 0.3,
+        });
+        const results = await faceapi.detectAllFaces(inputImgEl, options);
+        if (results.length <= 0) {
+          console.log("no face in input image");
+          return;
+        } else {
+          console.log(results);
+        }
+
+        // 顔認識の結果をインプット画像に当て込み
+        faceapi.matchDimensions(canvas, inputImgEl);
+        const displaySize = { width: canvas.width, height: canvas.height };
+        const resizedResults = faceapi.resizeResults(results, displaySize);
+
+        // はめ込み画像読込
+        const loadImage = (src) => {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.src = src;
+          });
+        };
+        const image = await loadImage("test_img.png");
+
+        // はめ込み画像を認識した顔の位置に設定
+        resizedResults.forEach((result) => {
+          const width = result.box.width;
+          const height = result.box.height;
+          const x = result.box.x;
+          const y = result.box.y;
+          canvas.getContext("2d").drawImage(image, x, y, width, height);
+        });
+
+        // x座標を設定
+        canvas.getContext("2d").beginPath();
+        canvas.getContext("2d").moveTo(0, 0);
+        canvas.getContext("2d").lineTo(300, 0);
+        canvas.getContext("2d").strokeStyle = "red";
+        canvas.getContext("2d").lineWidth = 10;
+        canvas.getContext("2d").stroke();
+        // y座標を設定
+        canvas.getContext("2d").beginPath();
+        canvas.getContext("2d").moveTo(0, 0);
+        canvas.getContext("2d").lineTo(0, 300);
+        canvas.getContext("2d").strokeStyle = "green";
+        canvas.getContext("2d").lineWidth = 10;
+        canvas.getContext("2d").stroke();
+      };
+    </script>
+  </body>
+</html>
