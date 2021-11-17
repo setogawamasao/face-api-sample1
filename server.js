@@ -5,9 +5,6 @@ const { get } = require("request");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(express.static(path.join(__dirname, "/weights")));
-// app.use(express.static(path.join(__dirname, "/js")));
-// app.use(express.static(path.join(__dirname, "/images")));
 app.use(express.static(path.join(__dirname, "/")));
 
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "/index.html")));

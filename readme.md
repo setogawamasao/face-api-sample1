@@ -1,4 +1,10 @@
-# face-api.js のサンプル
+# face-api.js の最小サンプル
+
+## デモサイト
+
+https://setogawamasao.github.io/face-api-sample1/index.html
+
+![demo](./readme-demo.gif)
 
 ## 起動方法
 
